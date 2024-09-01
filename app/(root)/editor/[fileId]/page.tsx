@@ -1,6 +1,10 @@
 "use client"
 
-import React, { useReducer, useState } from 'react'
+import { generateResumeMarkdown } from '@/lib/utils';
+import React, {useReducer, useState } from 'react'
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 const initialState = {
   personalInfo: {
@@ -52,6 +56,88 @@ const initialState = {
   ],
 };
 
+const data = {
+  personalInfo: {
+    name: "John Doe",
+    email: "johndoe@example.com",
+    linkedIn: "https://www.linkedin.com/in/johndoe/",
+    github: "https://github.com/johndoe",
+    phone: "+1 (123) 456-7890",
+  },
+  education: [
+    {
+      institute: "Massachusetts Institute of Technology",
+      duration: "September 2018 - June 2022",
+      fieldOfStudy: "Bachelor of Science in Computer Science",
+      gpa: "4.0/4.0",
+      relevantCoursework: "Algorithms, Data Structures, Machine Learning, Computer Networks, Operating Systems",
+    },
+  ],
+  projects: [
+    {
+      name: "Personal Finance Tracker",
+      techStack: "React, Node.js, Express, MongoDB",
+      githubLink: "https://github.com/johndoe/finance-tracker",
+      description: ["Developed a web application for tracking personal expenses and generating financial reports."],
+      achievements: [
+        "Implemented data visualization using D3.js to provide insights into spending patterns.",
+        "Integrated OAuth2 for secure login using Google and Facebook.",
+      ],
+    },
+    {
+      name: "AI-Powered Chatbot",
+      techStack: "Python, TensorFlow, Flask",
+      githubLink: "https://github.com/johndoe/ai-chatbot",
+      description: ["Created an AI-powered chatbot that provides customer support for e-commerce websites."],
+      achievements: [
+        "Deployed a deep learning model using TensorFlow that achieved 90 accuracy on test data.",
+        "Reduced customer service response time by 50.",
+      ],
+    },
+  ],
+  skills: {
+    programming: ["JavaScript", "Python", "C++", "Java"],
+    devFrameworks: ["React", "Node.js", "Django", "Flask"],
+    libraries: ["TensorFlow", "Pandas", "D3.js"],
+    databases: ["MongoDB", "MySQL"],
+  },
+  experience: [
+    {
+      company: "Tech Innovators Inc.",
+      position: "Software Engineer",
+      duration: "July 2022 - Present",
+      location: "San Francisco, CA",
+      description: [
+        "Developed and maintained web applications using React and Node.js.",
+        "Collaborated with cross-functional teams to design and implement new features.",
+      ],
+    },
+    {
+      company: "Startup Labs",
+      position: "Intern",
+      duration: "June 2021 - August 2021",
+      location: "New York, NY",
+      description: [
+        "Assisted in the development of a mobile app using React Native.",
+        "Conducted unit testing and debugging for the application.",
+      ],
+    },
+  ],
+  certifications: [
+    {
+      name: "Certified Kubernetes Administrator",
+      institute: "Linux Foundation",
+      link: "https://www.credly.com/badges/example",
+    },
+    {
+      name: "AWS Certified Solutions Architect",
+      institute: "Amazon Web Services",
+      link: "https://www.credly.com/badges/example",
+    },
+  ],
+};
+
+
 // define action types
 const ACTIONS = {
   ADD_SECTION: "ADD_SECTION",
@@ -94,7 +180,7 @@ function resumeReducer(state, action) {
 
 
 const ResumeEditor = () => {
-  const [resumeData, dispatch] = useReducer(resumeReducer, initialState);
+  const [resumeData, dispatch] = useReducer(resumeReducer, data);
   const [activeSection, setActiveSection] = useState("personalInfo");
 
   const handlePersonalInfoChange = (field, value) => {
@@ -169,197 +255,6 @@ const ResumeEditor = () => {
     </div>
   );
 };
-
-// function InputForm({
-//   resumeData,
-//   activeSection,
-//   onPersonalInfoChange,
-//   onAddSection,
-//   onUpdateSection,
-//   onRemoveSection,
-//   onSkillsChange,
-// }) {
-//   const renderPersonalInfo = () => (
-//     <div>
-//       <h2>Personal Information</h2>
-//       {Object.keys(resumeData.personalInfo).map((field) => (
-//         <input
-//           key={field}
-//           type="text"
-//           value={resumeData.personalInfo[field]}
-//           onChange={(e) => onPersonalInfoChange(field, e.target.value)}
-//           placeholder={field}
-//         />
-//       ))}
-//     </div>
-//   );
-
-//   const renderEducation = () => (
-//     <div>
-//       <h2>Education</h2>
-//       {resumeData.education.map((edu, index) => (
-//         <div key={index}>
-//           {Object.keys(edu).map((field) => (
-//             <input
-//               key={field}
-//               type="text"
-//               value={edu[field]}
-//               onChange={(e) => onUpdateSection("education", index, field, e.target.value)}
-//               placeholder={field}
-//             />
-//           ))}
-//           <button onClick={() => onRemoveSection("education", index)}>Remove</button>
-//         </div>
-//       ))}
-//       <button onClick={() => onAddSection("education")}>Add Education</button>
-//     </div>
-//   );
-
-//   const renderProjects = () => (
-//     <div>
-//       <h2>Projects</h2>
-//       {resumeData.projects.map((project, index) => (
-//         <div key={index}>
-//           {Object.keys(project).map((field) =>
-//             field === "description" || field === "achievements" ? (
-//               <div key={field}>
-//                 <h4>{field}</h4>
-//                 {project[field].map((item, itemIndex) => (
-//                   <input
-//                     key={itemIndex}
-//                     type="text"
-//                     value={item}
-//                     onChange={(e) => {
-//                       const newArray = [...project[field]];
-//                       newArray[itemIndex] = e.target.value;
-//                       onUpdateSection("projects", index, field, newArray);
-//                     }}
-//                     placeholder={`${field} ${itemIndex + 1}`}
-//                   />
-//                 ))}
-//                 <button
-//                   onClick={() => {
-//                     const newArray = [...project[field], ""];
-//                     onUpdateSection("projects", index, field, newArray);
-//                   }}
-//                 >
-//                   Add {field}
-//                 </button>
-//               </div>
-//             ) : (
-//               <input
-//                 key={field}
-//                 type="text"
-//                 value={project[field]}
-//                 onChange={(e) => onUpdateSection("projects", index, field, e.target.value)}
-//                 placeholder={field}
-//               />
-//             )
-//           )}
-//           <button onClick={() => onRemoveSection("projects", index)}>Remove Project</button>
-//         </div>
-//       ))}
-//       <button onClick={() => onAddSection("projects")}>Add Project</button>
-//     </div>
-//   );
-
-//   const renderSkills = () => (
-//     <div>
-//       <h2>Skills</h2>
-//       {Object.keys(resumeData.skills).map((skillType) => (
-//         <div key={skillType}>
-//           <h3>{skillType}</h3>
-//           <input
-//             type="text"
-//             value={resumeData.skills[skillType].join(", ")}
-//             onChange={(e) => onSkillsChange(skillType, e.target.value.split(", "))}
-//             placeholder={`Enter ${skillType} separated by commas`}
-//           />
-//         </div>
-//       ))}
-//     </div>
-//   );
-
-//   const renderExperience = () => (
-//     <div>
-//       <h2>Experience</h2>
-//       {resumeData.experience.map((exp, index) => (
-//         <div key={index}>
-//           {Object.keys(exp).map((field) =>
-//             field === "description" ? (
-//               <div key={field}>
-//                 <h4>{field}</h4>
-//                 {exp[field].map((item, itemIndex) => (
-//                   <input
-//                     key={itemIndex}
-//                     type="text"
-//                     value={item}
-//                     onChange={(e) => {
-//                       const newArray = [...exp[field]];
-//                       newArray[itemIndex] = e.target.value;
-//                       onUpdateSection("experience", index, field, newArray);
-//                     }}
-//                     placeholder={`${field} ${itemIndex + 1}`}
-//                   />
-//                 ))}
-//                 <button
-//                   onClick={() => {
-//                     const newArray = [...exp[field], ""];
-//                     onUpdateSection("experience", index, field, newArray);
-//                   }}
-//                 >
-//                   Add {field}
-//                 </button>
-//               </div>
-//             ) : (
-//               <input
-//                 key={field}
-//                 type="text"
-//                 value={exp[field]}
-//                 onChange={(e) => onUpdateSection("experience", index, field, e.target.value)}
-//                 placeholder={field}
-//               />
-//             )
-//           )}
-//           <button onClick={() => onRemoveSection("experience", index)}>Remove Experience</button>
-//         </div>
-//       ))}
-//       <button onClick={() => onAddSection("experience")}>Add Experience</button>
-//     </div>
-//   );
-
-//   const renderCertifications = () => (
-//     <div>
-//       <h2>Certifications</h2>
-//       {resumeData.certifications.map((cert, index) => (
-//         <div key={index}>
-//           {Object.keys(cert).map((field) => (
-//             <input
-//               key={field}
-//               type="text"
-//               value={cert[field]}
-//               onChange={(e) => onUpdateSection("certifications", index, field, e.target.value)}
-//               placeholder={field}
-//             />
-//           ))}
-//           <button onClick={() => onRemoveSection("certifications", index)}>Remove Certification</button>
-//         </div>
-//       ))}
-//       <button onClick={() => onAddSection("certifications")}>Add Certification</button>
-//     </div>
-//   );
-
-//   return (
-//     <div>
-//       {renderPersonalInfo()}
-//       {renderEducation()}
-//       {renderProjects()}
-//       {renderSkills()}
-//       {renderExperience()}
-//       {renderCertifications()}
-//     </div>
-//   );
-// }
 
 function InputForm({
   resumeData,
@@ -618,14 +513,55 @@ function InputForm({
   );
 }
 
+// Sample data for resume preview
+
 // Resume Preview component (placeholder for now)
 function ResumePreview({ resumeData }) {
+  const markdownContent = generateResumeMarkdown(resumeData);
+
   return (
     <div>
       <h2>Resume Preview</h2>
-      <pre>{JSON.stringify(resumeData, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(resumeData, null, 2)}</pre> */}
+      <MarkdownRenderer content={markdownContent} />
     </div>
   );
 }
+
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
+  return (
+    <div className="markdown-body prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none">
+      <ReactMarkdown
+        components={{
+          h1: ({ node, ...props }) => <h1 className="text-4xl font-bold mb-4 pb-2 border-b" {...props} />,
+          h2: ({ node, ...props }) => <h2 className="text-3xl font-semibold mt-8 mb-4" {...props} />,
+          h3: ({ node, ...props }) => <h3 className="text-2xl font-semibold mt-6 mb-3" {...props} />,
+          h4: ({ node, ...props }) => <h4 className="text-xl font-semibold mt-4 mb-2" {...props} />,
+          p: ({ node, ...props }) => <p className="mb-4" {...props} />,
+          ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4" {...props} />,
+          ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4" {...props} />,
+          li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+          a: ({ node, ...props }) => <a className="text-blue-600 hover:underline" {...props} />,
+          code({ node, inline, className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className || "");
+            return !inline && match ? (
+              <SyntaxHighlighter style={tomorrow} language={match[1]} PreTag="div" className="rounded-md" {...props}>
+                {String(children).replace(/\n$/, "")}
+              </SyntaxHighlighter>
+            ) : (
+              <code className="bg-gray-100 rounded-md px-1 py-0.5" {...props}>
+                {children}
+              </code>
+            );
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
+};
+
+
 
 export default ResumeEditor;
