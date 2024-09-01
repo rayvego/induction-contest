@@ -11,7 +11,7 @@ const Nav = ({userId} : {userId: string}) => {
 
   const logoutHandler = async () => {
     try {
-      console.log("HERE")
+      // console.log("HERE")
       await logoutAccount();
       router.push("/sign-in");
     } catch (error: any) {
@@ -20,12 +20,13 @@ const Nav = ({userId} : {userId: string}) => {
   }
 
   return (
-    <div>
-      {userId && (
-        <Button onClick={logoutHandler}>Logout</Button>
-      )}
+    <div className="flex items-center space-x-4">
+      <div>
+        Made with 🫶🏻 by <span className="gradient">Rayvego</span>
+      </div>
+      {userId && <Button onClick={logoutHandler}>Logout</Button>}
     </div>
-  )
+  );
 }
 
 export default Nav

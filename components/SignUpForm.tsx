@@ -50,6 +50,9 @@ export function SignUpForm() {
       <div className="flex justify-center items-center flex-col space-y-2">
         <h1 className="text-4xl">Raysume 🔮</h1>
         <span className="text-muted-foreground">Make Resumes Faster Than EVER with AI!</span>
+        <div>
+          Made with 🫶🏻 by <span className="gradient">Rayvego</span>
+        </div>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
