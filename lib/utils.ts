@@ -74,12 +74,12 @@ export const generateResumeMarkdown = (data): string => {
 
   // Personal Information
   markdown += `# **${data.personalInfo.name}**  \n`;
-  markdown += `${data.personalInfo.phone} • [Email](mailto:${data.personalInfo.email}) • [GitHub](${data.personalInfo.github}) • [LinkedIn](${data.personalInfo.linkedIn})\n\n`;
+  markdown += `${data.personalInfo.phone} | [Email](mailto:${data.personalInfo.email}) | [GitHub](${data.personalInfo.github}) | [LinkedIn](${data.personalInfo.linkedIn})\n\n`;
 
   // Education
   markdown += `### **Education**  \n`;
   data.education.forEach((edu) => {
-    markdown += `**${edu.institute}** (${edu.duration})  .\n`;
+    markdown += `**${edu.institute}** (${edu.duration})  \n`;
     markdown += `*${edu.fieldOfStudy}, GPA: ${edu.gpa}*  \n`;
     markdown += `*Courses:* ${edu.relevantCoursework}\n\n`;
   });

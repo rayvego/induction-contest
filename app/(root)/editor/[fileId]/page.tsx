@@ -1,60 +1,65 @@
 "use client"
 
-import { generateResumeMarkdown } from '@/lib/utils';
-import React, {useReducer, useState } from 'react'
+import { Button } from '@/components/ui/button';
+import { getDocument, saveDocument } from '@/lib/actions/user.actions';
+import { deserializeData, generateResumeMarkdown, serializeData } from '@/lib/utils';
+import { useParams } from 'next/navigation';
+import React, {useEffect, useReducer, useState } from 'react'
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { deserialize } from 'v8';
 
-const initialState = {
-  personalInfo: {
-    name: "",
-    email: "",
-    linkedIn: "",
-    github: "",
-    phone: "",
-  },
-  education: [ // array of objects as user can have multiple degrees
-    {
-      institute: "",
-      duration: "",
-      fieldOfStudy: "",
-      gpa: "",
-      relevantCoursework: "",
-    },
-  ],
-  projects: [ // array of objects as user can have multiple projects
-    {
-      name: "",
-      techStack: "",
-      githubLink: "",
-      description: [""], // each bullet point as a string
-      achievements: [""],
-    },
-  ],
-  skills: { // each key is a category of skills
-    programming: [""],
-    devFrameworks: [""],
-    libraries: [""],
-    datebases: [""],
-  },
-  experience: [ // array of objects as user can have multiple experiences
-    {
-      company: "",
-      position: "",
-      duration: "",
-      location: "",
-      description: [""],
-    },
-  ],
-  certifications: [ // array of objects as user can have multiple certifications
-    {
-      name: "",
-      institute: "",
-      link: "",
-    },
-  ],
-};
+// empty initial state for the reducer
+// const initialState = {
+//   personalInfo: {
+//     name: "",
+//     email: "",
+//     linkedIn: "",
+//     github: "",
+//     phone: "",
+//   },
+//   education: [ // array of objects as user can have multiple degrees
+//     {
+//       institute: "",
+//       duration: "",
+//       fieldOfStudy: "",
+//       gpa: "",
+//       relevantCoursework: "",
+//     },
+//   ],
+//   projects: [ // array of objects as user can have multiple projects
+//     {
+//       name: "",
+//       techStack: "",
+//       githubLink: "",
+//       description: [""], // each bullet point as a string
+//       achievements: [""],
+//     },
+//   ],
+//   skills: { // each key is a category of skills
+//     programming: [""],
+//     devFrameworks: [""],
+//     libraries: [""],
+//     datebases: [""],
+//   },
+//   experience: [ // array of objects as user can have multiple experiences
+//     {
+//       company: "",
+//       position: "",
+//       duration: "",
+//       location: "",
+//       description: [""],
+//     },
+//   ],
+//   certifications: [ // array of objects as user can have multiple certifications
+//     {
+//       name: "",
+//       institute: "",
+//       link: "",
+//     },
+//   ],
+// };
 
 const data = {
   personalInfo: {
@@ -144,6 +149,7 @@ const ACTIONS = {
   REMOVE_SECTION: "REMOVE_SECTION",
   UPDATE_PERSONAL_INFO: "UPDATE_PERSONAL_INFO",
   UPDATE_SKILLS: "UPDATE_SKILLS",
+  UPDATE_RESUME_DATA: "UPDATE_RESUME_DATA",
 };
 
 // reducer function to handle all state updates
@@ -173,6 +179,8 @@ function resumeReducer(state, action) {
           [action.skillType]: action.value,
         },
       };
+    case ACTIONS.UPDATE_RESUME_DATA:
+      return action.value;
     default:
       return state;
   }
@@ -180,6 +188,7 @@ function resumeReducer(state, action) {
 
 
 const ResumeEditor = () => {
+  const {fileId} : {fileId: string} = useParams()
   const [resumeData, dispatch] = useReducer(resumeReducer, data);
   const [activeSection, setActiveSection] = useState("personalInfo");
 
@@ -234,6 +243,32 @@ const ResumeEditor = () => {
     dispatch({ type: "REMOVE_SECTION", section, index });
   };
 
+  const handleSave = async () => {
+    try {
+      // save resume data to the database
+      await saveDocument({fileId: fileId, content: serializeData(resumeData)})
+      console.log("Resume data saved successfully!");
+    } catch (error : any) {
+      console.error("Error saving resume data:", error);
+    }
+  }
+
+  useEffect(() => {
+    // fetch resume data from the database
+    // setResumeData(data);
+    async function getData() {
+      try {
+        const resumeData = await getDocument(fileId);
+        const content = deserializeData(resumeData.content);
+        // set the resume data in the state using the reducer, if it is null then use the initial data
+        dispatch({ type: "UPDATE_RESUME_DATA", value: content || data });
+      } catch (error: any) {
+        console.error("Error fetching resume data:", error);
+      }
+    }
+    getData();
+  }, [fileId]);
+
   return (
     <div className="bg-gray-100 size-full p-3">
       <div className="flex space-x-3 size-full">
@@ -248,8 +283,14 @@ const ResumeEditor = () => {
             onSkillsChange={handleSkillsChange}
           />
         </div>
-        <div className="w-1/2 bg-white rounded-xl shadow-lg p-5 overflow-y-scroll">
+        <div className="w-1/2 bg-white rounded-xl shadow-lg p-5 overflow-y-scroll relative">
           <ResumePreview resumeData={resumeData} />
+          <Button
+            onClick={handleSave}
+            className="fixed bottom-7 right-10 p-2 rounded-lg shadow-xl w-24"
+          >
+            Save
+          </Button>
         </div>
       </div>
     </div>

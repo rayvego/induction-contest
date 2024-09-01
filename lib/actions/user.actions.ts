@@ -4,6 +4,7 @@ import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
+import exp from "constants";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -135,5 +136,27 @@ export async function deleteDocument(fileId: string) {
   } catch (error: any) {
     console.error("Error deleting file: ", error);
     return false;
+  }
+}
+
+export async function saveDocument({ fileId, content }: { fileId: string, content: string }) {
+  try {
+    const { database } = await createAdminClient();
+    const file = await database.updateDocument(DATABASE_ID!, FILE_COLLECTION_ID!, fileId, {
+      content,
+    });
+    return file;
+  } catch (error: any) {
+    console.error("Error saving file: ", error);
+  }
+}
+
+export async function getDocument(fileId: string) {
+  try {
+    const { database } = await createAdminClient();
+    const file = await database.getDocument(DATABASE_ID!, FILE_COLLECTION_ID!, fileId);
+    return parseStringify(file);
+  } catch (error: any) {
+    console.error("Error getting file: ", error);
   }
 }
