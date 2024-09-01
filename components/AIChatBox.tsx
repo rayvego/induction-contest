@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { getGroqChatCompletion } from "@/lib/groq";
+import ReactMarkdown from "react-markdown";
 
 // Define the structure of your resume data
 interface ResumeData {
@@ -110,6 +111,50 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
     }
   };
 
+  const handleGenerateSkills = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/generate-skills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeData }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setMessages([...messages, { role: "assistant", content: data.content }]);
+    } catch (error) {
+      console.error("Error generating skills:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGenerateQuestions = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/generate-questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeData }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setMessages([...messages, { role: "assistant", content: data.content }]);
+    } catch (error) {
+      console.error("Error generating skills:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSectionReview = async (section: keyof ResumeData) => {
     setIsLoading(true);
     try {
@@ -159,8 +204,12 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
     <div className="flex flex-col space-y-4 p-4">
       <div className="flex-grow overflow-y-auto space-y-2">
         {messages.map((msg, index) => (
-          <div key={index} className={`p-2 rounded ${msg.role === "user" ? "bg-blue-100" : "bg-gray-100"}`}>
-            {msg.content}
+          <div key={index} className={`p-2 rounded ${msg.role === "user" ? "bg-blue-100" : "bg-gray-200"}`}>
+            {msg.role === "user" ? (
+              msg.content
+            ) : (
+              <ReactMarkdown className="prose max-w-none">{msg.content}</ReactMarkdown>
+            )}
           </div>
         ))}
       </div>
@@ -176,7 +225,7 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
           Send
         </Button>
       </div>
-      <div className="flex space-x-2">
+      <div className="flex space-x-2 flex-wrap gap-y-2">
         <Button onClick={handleReviewResume} disabled={isLoading}>
           Review Entire Resume
         </Button>
@@ -185,6 +234,12 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
         </Button>
         <Button onClick={() => handleSectionReview("projects")} disabled={isLoading}>
           Review Projects
+        </Button>
+        <Button onClick={handleGenerateSkills} disabled={isLoading}>
+          Generate Skills
+        </Button>
+        <Button onClick={handleGenerateQuestions} disabled={isLoading}>
+          Generate Questions
         </Button>
       </div>
       {isLoading && <div className="text-center">Processing...</div>}
