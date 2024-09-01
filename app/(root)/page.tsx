@@ -1,6 +1,7 @@
 import InitialFiles from "@/components/InitialFiles";
 import { getFiles, getLoggedInUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default async function Home() {
   const user = await getLoggedInUser();

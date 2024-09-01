@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import FileCard from "@/components/FileCard";
 import {
@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { createDocument, deleteDocument } from "@/lib/actions/user.actions";
 import { set } from "zod";
+import toast from "react-hot-toast";
 
 const RecentFiles = ({ initialFiles, userId}: InitialFileProps) => {
   const [files, setFiles] = useState(initialFiles);
@@ -36,7 +37,7 @@ const RecentFiles = ({ initialFiles, userId}: InitialFileProps) => {
 
       if (!res) {
         console.log("Failed to delete file");
-        // add toast message
+        toast.error("Failed to delete file");
       }
 
       // @ts-ignore
@@ -44,7 +45,7 @@ const RecentFiles = ({ initialFiles, userId}: InitialFileProps) => {
       console.log("File deleted");
 
       setIsCreateModalOpen(false);
-      // add toast message
+      toast.success("File deleted successfully!");
     } catch (error: any) {
       console.error("Error deleting file: ", error);
     }
@@ -56,16 +57,22 @@ const RecentFiles = ({ initialFiles, userId}: InitialFileProps) => {
       const newFile = await createDocument({ userId: userId, fileName: newFileName });
       if (!newFile) {
         console.log("Failed to create file");
+        toast.error("Failed to create file");
         return;
         // add toast message
       } else {
         router.push(`/editor/${newFile.$id}`);
         setIsCreateModalOpen(false);
+        toast.success("File created successfully!");
       }
     } catch (error: any) {
       console.error("Error creating file: ", error);
     }
   };
+
+  useEffect(() => {
+    toast.success("Welcome back!", { icon: "🔮" });
+  }, [])
 
   // useEffect(() => {
   //   const fetchUpdatedFiles = async () => {

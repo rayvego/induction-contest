@@ -2,32 +2,35 @@
 
 import AIChatBox from '@/components/AIChatBox';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { getDocument, saveDocument } from '@/lib/actions/user.actions';
 import { convertMarkdownToPDF, downloadMarkdownFile } from '@/lib/pdfGeneration';
 import { deserializeData, generateResumeMarkdown, serializeData } from '@/lib/utils';
 import { useParams } from 'next/navigation';
 import React, {useEffect, useReducer, useState } from 'react'
+import toast from 'react-hot-toast';
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-
-
+// Sample data for resume editor
 const data = {
   personalInfo: {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    linkedIn: "https://www.linkedin.com/in/johndoe/",
-    github: "https://github.com/johndoe",
-    phone: "+1 (123) 456-7890",
+    name: "Rayvego",
+    email: "themohit27@gmail.com",
+    linkedIn: "https://www.linkedin.com/in/mohit-panchal-18835to5329/",
+    github: "https://github.com/rayvego",
+    phone: "+91 8263003413",
   },
   education: [
     {
-      institute: "Massachusetts Institute of Technology",
-      duration: "September 2018 - June 2022",
-      fieldOfStudy: "Bachelor of Science in Computer Science",
-      gpa: "4.0/4.0",
-      relevantCoursework: "Algorithms, Data Structures, Machine Learning, Computer Networks, Operating Systems",
+      institute: "Indian Institute of Technology, Gandhinagar",
+      duration: "Aug 2023 - Present",
+      fieldOfStudy: "Bachelor of Technology in Computer Science and Engineering",
+      gpa: "9.41/10",
+      relevantCoursework:
+        "Data Structures and Algorithms I, Computer Networks, Computer Organization & Architecture, Operating Systems, Theory of Computing, Databases",
     },
   ],
   projects: [
@@ -53,10 +56,10 @@ const data = {
     },
   ],
   skills: {
-    programming: ["JavaScript", "Python", "C++", "Java"],
-    devFrameworks: ["React", "Node.js", "Django", "Flask"],
-    libraries: ["TensorFlow", "Pandas", "D3.js"],
-    databases: ["MongoDB", "MySQL"],
+    programming: ["TypeScript", "Python", "C++", "Java", "Rust", "Solidity"],
+    devFrameworks: ["Nextjs", "Express", "React", "Node.js", "Flask"],
+    libraries: ["Socket.io", "Numpy", "Matplotlib", "Pandas", "Prisma", "Scikit Learn", "Pandas"],
+    databases: ["AWS S3", "MongoDB", "MySQL", "PostgreSQL"],
   },
   experience: [
     {
@@ -95,7 +98,7 @@ const data = {
 };
 
 
-// define action types
+// define action types for state updates
 const ACTIONS = {
   ADD_SECTION: "ADD_SECTION",
   REMOVE_SECTION: "REMOVE_SECTION",
@@ -105,6 +108,7 @@ const ACTIONS = {
 };
 
 // reducer function to handle all state updates
+// haven't utilized typescript much here
 function resumeReducer(state, action) {
   switch (action.type) {
     case ACTIONS.ADD_SECTION:
@@ -138,9 +142,9 @@ function resumeReducer(state, action) {
   }
 }
 
-
 const ResumeEditor = () => {
   const {fileId} : {fileId: string} = useParams()
+  // use reducer to manage state updates as the resume data is complex
   const [resumeData, dispatch] = useReducer(resumeReducer, data);
   const [activeSection, setActiveSection] = useState("personalInfo");
 
@@ -185,6 +189,7 @@ const ResumeEditor = () => {
           }
 
     dispatch({ type: "ADD_SECTION", section, value: newSection });
+    toast.success(`${section} added successfully!`);
   };
 
   const handleUpdateSection = (section, index, field, value) => {
@@ -193,6 +198,7 @@ const ResumeEditor = () => {
 
   const handleRemoveSection = (section, index) => {
     dispatch({ type: "REMOVE_SECTION", section, index });
+    toast.success(`${section} removed successfully!`);
   };
 
   const handleSave = async () => {
@@ -200,14 +206,17 @@ const ResumeEditor = () => {
       // save resume data to the database
       await saveDocument({fileId: fileId, content: serializeData(resumeData)})
       console.log("Resume data saved successfully!");
+      toast.success("Resume data saved successfully!");
     } catch (error : any) {
       console.error("Error saving resume data:", error);
+      toast.error("Error saving resume data");
     }
   }
 
   const handleGeneratePDF = () => {
     const markdownContent = generateResumeMarkdown(resumeData);
     downloadMarkdownFile(markdownContent, "example.md");
+    toast.success("Markdown file downloaded successfully!");
   };
 
   useEffect(() => {
@@ -219,8 +228,10 @@ const ResumeEditor = () => {
         const content = deserializeData(resumeData.content);
         // set the resume data in the state using the reducer, if it is null then use the initial data
         dispatch({ type: "UPDATE_RESUME_DATA", value: content || data });
+        toast.success("Welcome back!", { icon: "🔮" });
       } catch (error: any) {
         console.error("Error fetching resume data:", error);
+        toast.error("Error fetching resume data");
       }
     }
     getData();
@@ -250,8 +261,7 @@ const ResumeEditor = () => {
               Download MD
             </Button>
           </div>
-          <div className="overflow-y-scroll p-5 rounded-xl shadow-lg bg-white h-2/5 w-full">
-            <h2>AI Chat Box</h2>
+          <div className="p-2 rounded-xl shadow-lg bg-white h-2/5 w-full">
             <AIChatBox resumeData={resumeData} dispatch={dispatch} />
           </div>
         </div>
@@ -270,37 +280,39 @@ function InputForm({
   onSkillsChange,
 }) {
   const renderPersonalInfo = () => (
-    <div className="space-y-4 rounded-md shadow-xl">
-      <h2 className="text-24">Personal Information</h2>
-      {Object.keys(resumeData.personalInfo).map((field) => (
-        <div key={field} className="flex flex-col gap-2">
-          <label htmlFor={field} className="text-16 font-medium">
-            {field}
-          </label>
-          <input
-            id={field}
-            type="text"
-            value={resumeData.personalInfo[field]}
-            onChange={(e) => onPersonalInfoChange(field, e.target.value)}
-            placeholder={field}
-            className="input-class"
-          />
-        </div>
-      ))}
+    <div className="section-outer">
+      <h2 className="text-24 font-semibold gradient">Personal Information</h2>
+      <div className="space-y-4">
+        {Object.keys(resumeData.personalInfo).map((field) => (
+          <div key={field} className="flex flex-col gap-1">
+            <Label htmlFor={field} className="form-label">
+              {field.charAt(0).toUpperCase() + field.slice(1)}
+            </Label>
+            <Input
+              id={field}
+              type="text"
+              value={resumeData.personalInfo[field]}
+              onChange={(e) => onPersonalInfoChange(field, e.target.value)}
+              placeholder={field}
+              className="input-class"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 
   const renderEducation = () => (
-    <div className="space-y-4">
-      <h2 className="text-24 font-semibold">Education</h2>
+    <div className="section-outer">
+      <h2 className="text-24 font-semibold gradient">Education</h2>
       {resumeData.education.map((edu, index) => (
         <div key={index} className="border rounded-lg p-4 space-y-4">
           {Object.keys(edu).map((field) => (
-            <div key={field} className="flex flex-col gap-2">
-              <label htmlFor={`${field}-${index}`} className="text-16 font-medium">
-                {field}
-              </label>
-              <input
+            <div key={field} className="flex flex-col gap-1">
+              <Label htmlFor={`${field}-${index}`} className="form-label">
+                {field.charAt(0).toUpperCase() + field.slice(1)}
+              </Label>
+              <Input
                 id={`${field}-${index}`}
                 type="text"
                 value={edu[field]}
@@ -310,31 +322,33 @@ function InputForm({
               />
             </div>
           ))}
-          <button
-            onClick={() => onRemoveSection("education", index)}
-            className="text14_padding10 bg-red-500 text-white rounded-lg"
-          >
-            Remove
-          </button>
+          {resumeData.education.length > 1 && (
+            <Button
+              onClick={() => onRemoveSection("education", index)}
+              variant={"secondary"}
+            >
+              Remove
+            </Button>
+          )}
         </div>
       ))}
-      <button onClick={() => onAddSection("education")} className="text14_padding10 bg-blue-500 text-white rounded-lg">
+      <Button onClick={() => onAddSection("education")}>
         Add Education
-      </button>
+      </Button>
     </div>
   );
 
   const renderProjects = () => (
-    <div className="space-y-4">
-      <h2 className="text-24 font-semibold">Projects</h2>
+    <div className="section-outer">
+      <h2 className="text-24 font-semibold gradient">Projects</h2>
       {resumeData.projects.map((project, index) => (
-        <div key={index} className="border rounded-lg p-4 space-y-4">
+        <div key={index} className="border rounded-lg p-4 space-y-4 section-outer">
           {Object.keys(project).map((field) =>
             field === "description" || field === "achievements" ? (
-              <div key={field} className="flex flex-col gap-2">
-                <h4 className="text-18 font-semibold">{field}</h4>
+              <div key={field} className="flex flex-col gap-1">
+                <h4 className="text-18 font-semibold">{field.charAt(0).toUpperCase() + field.slice(1)}</h4>
                 {project[field].map((item, itemIndex) => (
-                  <input
+                  <Input
                     key={itemIndex}
                     type="text"
                     value={item}
@@ -347,22 +361,21 @@ function InputForm({
                     className="input-class"
                   />
                 ))}
-                <button
+                <Button
                   onClick={() => {
                     const newArray = [...project[field], ""];
                     onUpdateSection("projects", index, field, newArray);
                   }}
-                  className="text14_padding10 bg-gray-300 text-gray-800 rounded-lg"
                 >
                   Add {field}
-                </button>
+                </Button>
               </div>
             ) : (
-              <div key={field} className="flex flex-col gap-2">
-                <label htmlFor={`${field}-${index}`} className="text-16 font-medium">
-                  {field}
-                </label>
-                <input
+              <div key={field} className="flex flex-col gap-1">
+                <Label htmlFor={`${field}-${index}`} className="text-16 font-medium">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </Label>
+                <Input
                   id={`${field}-${index}`}
                   type="text"
                   value={project[field]}
@@ -373,27 +386,26 @@ function InputForm({
               </div>
             )
           )}
-          <button
-            onClick={() => onRemoveSection("projects", index)}
-            className="text14_padding10 bg-red-500 text-white rounded-lg"
-          >
-            Remove Project
-          </button>
+          {resumeData.projects.length > 1 && (
+            <Button onClick={() => onRemoveSection("projects", index)} variant={"secondary"}>
+              Remove Project
+            </Button>
+          )}
         </div>
       ))}
-      <button onClick={() => onAddSection("projects")} className="text14_padding10 bg-blue-500 text-white rounded-lg">
+      <Button onClick={() => onAddSection("projects")} >
         Add Project
-      </button>
+      </Button>
     </div>
   );
 
   const renderSkills = () => (
-    <div className="space-y-4">
-      <h2 className="text-24 font-semibold">Skills</h2>
+    <div className="section-outer">
+      <h2 className="text-24 font-semibold gradient">Skills</h2>
       {Object.keys(resumeData.skills).map((skillType) => (
         <div key={skillType} className="flex flex-col gap-2">
-          <h3 className="text-18 font-semibold">{skillType}</h3>
-          <input
+          <h3 className="text-18 font-semibold form-label">{skillType.charAt(0).toUpperCase() + skillType.slice(1)}</h3>
+          <Input
             type="text"
             value={resumeData.skills[skillType].join(", ")}
             onChange={(e) => onSkillsChange(skillType, e.target.value.split(", "))}
@@ -406,16 +418,16 @@ function InputForm({
   );
 
   const renderExperience = () => (
-    <div className="space-y-4">
-      <h2 className="text-24 font-semibold">Experience</h2>
+    <div className="section-outer">
+      <h2 className="text-24 font-semibold gradient">Experience</h2>
       {resumeData.experience.map((exp, index) => (
-        <div key={index} className="border rounded-lg p-4 space-y-4">
+        <div key={index} className="border rounded-lg p-4 space-y-4 section-outer">
           {Object.keys(exp).map((field) =>
             field === "description" ? (
-              <div key={field} className="flex flex-col gap-2">
-                <h4 className="text-18 font-semibold">{field}</h4>
+              <div key={field} className="flex flex-col gap-1">
+                <h4 className="text-18 font-semibold">{field.charAt(0).toUpperCase() + field.slice(1)}</h4>
                 {exp[field].map((item, itemIndex) => (
-                  <input
+                  <Input
                     key={itemIndex}
                     type="text"
                     value={item}
@@ -428,22 +440,21 @@ function InputForm({
                     className="input-class"
                   />
                 ))}
-                <button
+                <Button
                   onClick={() => {
                     const newArray = [...exp[field], ""];
                     onUpdateSection("experience", index, field, newArray);
                   }}
-                  className="text14_padding10 bg-gray-300 text-gray-800 rounded-lg"
                 >
                   Add {field}
-                </button>
+                </Button>
               </div>
             ) : (
-              <div key={field} className="flex flex-col gap-2">
-                <label htmlFor={`${field}-${index}`} className="text-16 font-medium">
-                  {field}
-                </label>
-                <input
+              <div key={field} className="flex flex-col gap-1">
+                <Label htmlFor={`${field}-${index}`} className="text-16 font-medium">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </Label>
+                <Input
                   id={`${field}-${index}`}
                   type="text"
                   value={exp[field]}
@@ -454,31 +465,30 @@ function InputForm({
               </div>
             )
           )}
-          <button
-            onClick={() => onRemoveSection("experience", index)}
-            className="text14_padding10 bg-red-500 text-white rounded-lg"
-          >
-            Remove Experience
-          </button>
+          {resumeData.experience.length > 1 && (
+            <Button onClick={() => onRemoveSection("experience", index)} variant={"secondary"}>
+              Remove Experience
+            </Button>
+          )}
         </div>
       ))}
-      <button onClick={() => onAddSection("experience")} className="text14_padding10 bg-blue-500 text-white rounded-lg">
+      <Button onClick={() => onAddSection("experience")} >
         Add Experience
-      </button>
+      </Button>
     </div>
   );
 
   const renderCertifications = () => (
-    <div className="space-y-4">
-      <h2 className="text-24 font-semibold">Certifications</h2>
+    <div className="section-outer">
+      <h2 className="text-24 font-semibold gradient">Certifications</h2>
       {resumeData.certifications.map((cert, index) => (
-        <div key={index} className="border rounded-lg p-4 space-y-4">
+        <div key={index} className="border rounded-lg p-4 space-y-4 section-outer">
           {Object.keys(cert).map((field) => (
-            <div key={field} className="flex flex-col gap-2">
-              <label htmlFor={`${field}-${index}`} className="text-16 font-medium">
-                {field}
-              </label>
-              <input
+            <div key={field} className="flex flex-col gap-1">
+              <Label htmlFor={`${field}-${index}`} className="text-16 font-medium">
+                {field.charAt(0).toUpperCase() + field.slice(1)}
+              </Label>
+              <Input
                 id={`${field}-${index}`}
                 type="text"
                 value={cert[field]}
@@ -488,30 +498,31 @@ function InputForm({
               />
             </div>
           ))}
-          <button
+          {resumeData.certifications.length > 1 && (
+          <Button
             onClick={() => onRemoveSection("certifications", index)}
-            className="text14_padding10 bg-red-500 text-white rounded-lg"
+            variant={"secondary"}
           >
             Remove Certification
-          </button>
+          </Button>
+          )}
         </div>
       ))}
-      <button
+      <Button
         onClick={() => onAddSection("certifications")}
-        className="text14_padding10 bg-blue-500 text-white rounded-lg"
       >
         Add Certification
-      </button>
+      </Button>
     </div>
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 flex flex-col">
       {renderPersonalInfo()}
       {renderEducation()}
+      {renderExperience()}
       {renderProjects()}
       {renderSkills()}
-      {renderExperience()}
       {renderCertifications()}
     </div>
   );
@@ -524,9 +535,7 @@ function ResumePreview({ resumeData }) {
   const markdownContent = generateResumeMarkdown(resumeData);
 
   return (
-    <div>
-      <h2>Resume Preview</h2>
-      {/* <pre>{JSON.stringify(resumeData, null, 2)}</pre> */}
+    <div className="p-2">
       <MarkdownRenderer content={markdownContent} />
     </div>
   );

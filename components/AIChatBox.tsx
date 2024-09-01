@@ -154,47 +154,68 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
   };
 
   return (
-    <div className="flex flex-col space-y-4 p-4">
-      <div className="flex-grow overflow-y-auto space-y-2">
-        {messages.map((msg, index) => (
-          <div key={index} className={`p-2 rounded ${msg.role === "user" ? "bg-blue-100" : "bg-gray-200"}`}>
-            {msg.role === "user" ? (
-              msg.content
-            ) : (
-              <ReactMarkdown className="prose max-w-none">{msg.content}</ReactMarkdown>
-            )}
+    <div className="flex flex-col h-full p-4 space-y-4">
+      <div className="flex-shrink-0">
+        <div className="flex justify-between items-center">
+          <div className="flex space-x-2 w-full">
+            <Input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask AI anything about resumes!"
+              className="flex-grow placeholder:gradient gradient"
+            />
+            <Button onClick={handleSendMessage} disabled={isLoading}>
+              Send
+            </Button>
           </div>
-        ))}
+        </div>
       </div>
-      <div className="flex space-x-2">
-        <Input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question about resumes..."
-          className="flex-grow"
-        />
-        <Button onClick={handleSendMessage} disabled={isLoading}>
-          Send
-        </Button>
+
+      <div className="flex-grow overflow-y-scroll space-y-2">
+        <div className="space-y-2 p-2">
+          <div className="overflow-y-auto space-y-2">
+            {messages.map((msg, index) => (
+              <div key={index} className={`p-2 rounded ${msg.role === "user" ? "bg-white text-black" : "bg-gray-200"}`}>
+                {msg.role === "user" ? (
+                  msg.content
+                ) : (
+                  <ReactMarkdown className="prose max-w-none">{msg.content}</ReactMarkdown>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="flex space-x-2 flex-wrap gap-y-2">
-        <Button onClick={handleReviewResume} disabled={isLoading}>
-          Review Entire Resume
-        </Button>
-        <Button onClick={() => handleSectionReview("experience")} disabled={isLoading}>
-          Review Experience
-        </Button>
-        <Button onClick={() => handleSectionReview("projects")} disabled={isLoading}>
-          Review Projects
-        </Button>
-        <Button onClick={handleGenerateSkills} disabled={isLoading}>
-          Generate Skills
-        </Button>
-        <Button onClick={handleGenerateQuestions} disabled={isLoading}>
-          Generate Questions
-        </Button>
+
+      <div className="flex justify-between items-center gap-y-2">
+        <div className="flex items-center space-x-2">
+          <span className="gradient">Review:</span>
+          <div className="flex justify-between w-full space-x-2">
+            <Button onClick={handleReviewResume} disabled={isLoading} variant="secondary">
+              Entire Resume
+            </Button>
+            <Button onClick={() => handleSectionReview("experience")} disabled={isLoading} variant="secondary">
+              Experience
+            </Button>
+            <Button onClick={() => handleSectionReview("projects")} disabled={isLoading} variant="secondary">
+              Projects
+            </Button>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="gradient">Generate:</span>
+          <div className="flex justify-between w-full space-x-2">
+            <Button onClick={handleGenerateSkills} disabled={isLoading} variant="secondary">
+              Skills
+            </Button>
+            <Button onClick={handleGenerateQuestions} disabled={isLoading} variant="secondary">
+              Questions
+            </Button>
+          </div>
+        </div>
       </div>
+
       {isLoading && <div className="text-center">Processing...</div>}
     </div>
   );

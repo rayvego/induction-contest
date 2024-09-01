@@ -52,7 +52,7 @@ export function SignInForm() {
   return (
     <div className="p-10 bg-white shadow-xl rounded-xl flex flex-col items-center space-y-8">
       <div className="flex justify-center items-center flex-col space-y-2">
-        <h1 className="text-4xl">Raysume</h1>
+        <h1 className="text-4xl">Raysume 🔮</h1>
         <span className="text-muted-foreground">Make Resumes Faster Than EVER with AI!</span>
       </div>
       <Form {...form}>

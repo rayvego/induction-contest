@@ -237,6 +237,14 @@
     @apply text-14 w-full max-w-[280px] font-medium text-gray-700;
   }
 
+  .gradient {
+    @apply bg-gradient-to-br from-[#d52beb] via-[#eb2ba1] to-[#eb2b41] bg-clip-text text-transparent;
+  }
+
+  .section-outer {
+    @apply space-y-4 rounded-md shadow-xl p-4;
+  }
+
   .form-message {
     @apply text-12 text-red-500;
   }

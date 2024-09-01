@@ -12,10 +12,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <div className={"flex flex-col size-full"}>
         <div className={"root-layout"}>
           <Link href="/">
-            <h1 className="text-3xl">Raysume</h1>
+            <h1 className="text-3xl">Raysume 🔮</h1>
           </Link>
           <div>
-            <Nav userId={user.$id}/>
+            <Nav userId={user.$id} />
           </div>
         </div>
         {children}
