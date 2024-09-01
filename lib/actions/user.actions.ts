@@ -5,6 +5,7 @@ import { createAdminClient, createSessionClient } from "../appwrite";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
 import exp from "constants";
+import { redirect } from "next/navigation";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -21,6 +22,7 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
     return parseStringify(user.documents[0]);
   } catch (error) {
     console.error(error);
+    return null
   }
 };
 
@@ -38,7 +40,7 @@ export async function getLoggedInUser() {
     return parseStringify(user);
   } catch (error) {
     console.error("Error getting logged in user: ", error);
-    // return null;
+    return null;
   }
 }
 

@@ -11,56 +11,7 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-// empty initial state for the reducer
-// const initialState = {
-//   personalInfo: {
-//     name: "",
-//     email: "",
-//     linkedIn: "",
-//     github: "",
-//     phone: "",
-//   },
-//   education: [ // array of objects as user can have multiple degrees
-//     {
-//       institute: "",
-//       duration: "",
-//       fieldOfStudy: "",
-//       gpa: "",
-//       relevantCoursework: "",
-//     },
-//   ],
-//   projects: [ // array of objects as user can have multiple projects
-//     {
-//       name: "",
-//       techStack: "",
-//       githubLink: "",
-//       description: [""], // each bullet point as a string
-//       achievements: [""],
-//     },
-//   ],
-//   skills: { // each key is a category of skills
-//     programming: [""],
-//     devFrameworks: [""],
-//     libraries: [""],
-//     datebases: [""],
-//   },
-//   experience: [ // array of objects as user can have multiple experiences
-//     {
-//       company: "",
-//       position: "",
-//       duration: "",
-//       location: "",
-//       description: [""],
-//     },
-//   ],
-//   certifications: [ // array of objects as user can have multiple certifications
-//     {
-//       name: "",
-//       institute: "",
-//       link: "",
-//     },
-//   ],
-// };
+
 
 const data = {
   personalInfo: {
@@ -296,7 +247,7 @@ const ResumeEditor = () => {
               Save
             </Button>
             <Button onClick={handleGeneratePDF} className="absolute top-7 right-32 p-2 rounded-lg shadow-xl">
-              Download PDF
+              Download MD
             </Button>
           </div>
           <div className="overflow-y-scroll p-5 rounded-xl shadow-lg bg-white h-2/5 w-full">
