@@ -3,6 +3,7 @@
 import AIChatBox from '@/components/AIChatBox';
 import { Button } from '@/components/ui/button';
 import { getDocument, saveDocument } from '@/lib/actions/user.actions';
+import { convertMarkdownToPDF, downloadMarkdownFile } from '@/lib/pdfGeneration';
 import { deserializeData, generateResumeMarkdown, serializeData } from '@/lib/utils';
 import { useParams } from 'next/navigation';
 import React, {useEffect, useReducer, useState } from 'react'
@@ -253,6 +254,11 @@ const ResumeEditor = () => {
     }
   }
 
+  const handleGeneratePDF = () => {
+    const markdownContent = generateResumeMarkdown(resumeData);
+    downloadMarkdownFile(markdownContent, "example.md");
+  };
+
   useEffect(() => {
     // fetch resume data from the database
     // setResumeData(data);
@@ -288,6 +294,9 @@ const ResumeEditor = () => {
             <ResumePreview resumeData={resumeData} />
             <Button onClick={handleSave} className="absolute top-7 right-5 p-2 rounded-lg shadow-xl w-24">
               Save
+            </Button>
+            <Button onClick={handleGeneratePDF} className="absolute top-7 right-32 p-2 rounded-lg shadow-xl">
+              Download PDF
             </Button>
           </div>
           <div className="overflow-y-scroll p-5 rounded-xl shadow-lg bg-white h-2/5 w-full">
