@@ -32,6 +32,11 @@ declare interface MarkdownRendererProps {
   content: string;
 }
 
+interface AIChatBoxProps {
+  resumeData: ResumeData;
+  dispatch: (action: any) => void;
+}
+
 // declare interface ResumeData {
 //   personalInfo: {
 //     name: string;

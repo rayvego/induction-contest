@@ -1,5 +1,6 @@
 "use client"
 
+import AIChatBox from '@/components/AIChatBox';
 import { Button } from '@/components/ui/button';
 import { getDocument, saveDocument } from '@/lib/actions/user.actions';
 import { deserializeData, generateResumeMarkdown, serializeData } from '@/lib/utils';
@@ -8,7 +9,6 @@ import React, {useEffect, useReducer, useState } from 'react'
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { deserialize } from 'v8';
 
 // empty initial state for the reducer
 // const initialState = {
@@ -283,14 +283,17 @@ const ResumeEditor = () => {
             onSkillsChange={handleSkillsChange}
           />
         </div>
-        <div className="w-1/2 bg-white rounded-xl shadow-lg p-5 overflow-y-scroll relative">
-          <ResumePreview resumeData={resumeData} />
-          <Button
-            onClick={handleSave}
-            className="fixed bottom-7 right-10 p-2 rounded-lg shadow-xl w-24"
-          >
-            Save
-          </Button>
+        <div className="w-1/2 flex flex-col justify-between items-center gap-y-3">
+          <div className="relative overflow-y-scroll p-5  rounded-xl shadow-lg bg-white h-3/5">
+            <ResumePreview resumeData={resumeData} />
+            <Button onClick={handleSave} className="absolute top-7 right-5 p-2 rounded-lg shadow-xl w-24">
+              Save
+            </Button>
+          </div>
+          <div className="overflow-y-scroll p-5 rounded-xl shadow-lg bg-white h-2/5 w-full">
+            <h2>AI Chat Box</h2>
+            <AIChatBox resumeData={resumeData} dispatch={dispatch} />
+          </div>
         </div>
       </div>
     </div>
