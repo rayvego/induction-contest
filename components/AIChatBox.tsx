@@ -173,7 +173,7 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
       </div>
 
       <div className="flex-grow overflow-y-scroll space-y-2">
-        <div className="space-y-2 p-2 border rounded-xl h-full bg-gray-50">
+        <div className="space-y-2 p-2 border rounded-xl h-full bg-gray-50 overflow-y-scroll">
           <div className="overflow-y-auto space-y-2 ">
             {messages.map((msg, index) => (
               <div key={index} className={`p-2 rounded ${msg.role === "user" ? "bg-white text-black" : "bg-gray-200"}`}>

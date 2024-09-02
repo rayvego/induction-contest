@@ -71,7 +71,7 @@ const RecentFiles = ({ initialFiles, userId}: InitialFileProps) => {
   };
 
   useEffect(() => {
-    toast.success("Welcome back!", { icon: "🔮" });
+    toast.success("Welcome!", { icon: "🔮" });
   }, [])
 
   // useEffect(() => {
