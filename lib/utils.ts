@@ -81,26 +81,8 @@ export const generateResumeMarkdown = (data): string => {
   data.education.forEach((edu) => {
     markdown += `**${edu.institute}** (${edu.duration})  \n`;
     markdown += `*${edu.fieldOfStudy}, GPA: ${edu.gpa}*  \n`;
-    markdown += `*Courses:* ${edu.relevantCoursework}\n\n`;
+    markdown += `*Relevant Courses:* ${edu.coursework}\n\n`;
   });
-
-  // Projects
-  markdown += `### **Projects**  \n`;
-  data.projects.forEach((project, index) => {
-    markdown += `**${project.name}** • [GitHub](${project.githubLink})  \n`;
-    markdown += `*Tech:* ${project.techStack}  \n`;
-    project.description.concat(project.achievements).forEach((item) => {
-      markdown += `- ${item}  \n`;
-    });
-    if (index < data.projects.length - 1) markdown += "\n";
-  });
-
-  // Skills
-  markdown += `### **Skills**  \n`;
-  markdown += `**Languages:** ${data.skills.programming.join(", ")}  \n`;
-  markdown += `**Frameworks:** ${data.skills.devFrameworks.join(", ")}  \n`;
-  markdown += `**Libraries:** ${data.skills.libraries.join(", ")}  \n`;
-  markdown += `**Databases:** ${data.skills.databases?.join(", ")}  \n\n`;
 
   // Experience
   markdown += `### **Experience**  \n`;
@@ -111,6 +93,24 @@ export const generateResumeMarkdown = (data): string => {
     });
     if (index < data.experience.length - 1) markdown += "\n";
   });
+
+  // Projects
+  markdown += `### **Projects**  \n`;
+  data.projects.forEach((project, index) => {
+    markdown += `**${project.name}** | [GitHub](${project.githubLink})  \n`;
+    markdown += `*Tech Stack:* ${project.techStack}  \n`;
+    project.description.concat(project.achievements).forEach((item) => {
+      markdown += `- ${item}  \n`;
+    });
+    if (index < data.projects.length - 1) markdown += "\n";
+  });
+
+  // Skills
+  markdown += `### **Skills**  \n`;
+  markdown += `**Languages:** ${data.skills.programming.join(", ")}  \n`;
+  markdown += `**Frameworks:** ${data.skills.frameworks.join(", ")}  \n`;
+  markdown += `**Libraries:** ${data.skills.libraries.join(", ")}  \n`;
+  markdown += `**Databases:** ${data.skills.databases?.join(", ")}  \n\n`;
 
   // Certifications
   markdown += `### **Certifications**  \n`;

@@ -29,8 +29,30 @@ const data = {
       duration: "Aug 2023 - Present",
       fieldOfStudy: "Bachelor of Technology in Computer Science and Engineering",
       gpa: "9.41/10",
-      relevantCoursework:
+      coursework:
         "Data Structures and Algorithms I, Computer Networks, Computer Organization & Architecture, Operating Systems, Theory of Computing, Databases",
+    },
+  ],
+  experience: [
+    {
+      company: "Tech Innovators Inc.",
+      position: "Software Engineer",
+      duration: "July 2022 - Present",
+      location: "San Francisco, CA",
+      description: [
+        "Developed and maintained web applications using React and Node.js.",
+        "Collaborated with cross-functional teams to design and implement new features.",
+      ],
+    },
+    {
+      company: "Startup Labs",
+      position: "Intern",
+      duration: "June 2021 - August 2021",
+      location: "New York, NY",
+      description: [
+        "Assisted in the development of a mobile app using React Native.",
+        "Conducted unit testing and debugging for the application.",
+      ],
     },
   ],
   projects: [
@@ -57,32 +79,11 @@ const data = {
   ],
   skills: {
     programming: ["TypeScript", "Python", "C++", "Java", "Rust", "Solidity"],
-    devFrameworks: ["Nextjs", "Express", "React", "Node.js", "Flask"],
+    frameworks: ["Nextjs", "Express", "React", "Node.js", "Flask"],
     libraries: ["Socket.io", "Numpy", "Matplotlib", "Pandas", "Prisma", "Scikit Learn", "Pandas"],
     databases: ["AWS S3", "MongoDB", "MySQL", "PostgreSQL"],
   },
-  experience: [
-    {
-      company: "Tech Innovators Inc.",
-      position: "Software Engineer",
-      duration: "July 2022 - Present",
-      location: "San Francisco, CA",
-      description: [
-        "Developed and maintained web applications using React and Node.js.",
-        "Collaborated with cross-functional teams to design and implement new features.",
-      ],
-    },
-    {
-      company: "Startup Labs",
-      position: "Intern",
-      duration: "June 2021 - August 2021",
-      location: "New York, NY",
-      description: [
-        "Assisted in the development of a mobile app using React Native.",
-        "Conducted unit testing and debugging for the application.",
-      ],
-    },
-  ],
+
   certifications: [
     {
       name: "Certified Kubernetes Administrator",
@@ -164,7 +165,7 @@ const ResumeEditor = () => {
             duration: "",
             fieldOfStudy: "",
             gpa: "",
-            relevantCoursework: "",
+            coursework: "",
           }
         : section === "projects"
         ? {
@@ -231,14 +232,13 @@ const ResumeEditor = () => {
         toast.success("Welcome back!", { icon: "🔮" });
       } catch (error: any) {
         console.error("Error fetching resume data:", error);
-        toast.error("Error fetching resume data");
       }
     }
     getData();
   }, [fileId]);
 
   return (
-    <div className="bg-gray-100 size-full p-3">
+    <div className="bg-gray-100 p-3 max-xl:max-h-screen overflow-y-scroll no-scrollbar">
       <div className="flex space-x-3 size-full">
         <div className="w-1/2 bg-white rounded-xl shadow-lg p-5 overflow-y-scroll">
           <InputForm
@@ -257,7 +257,11 @@ const ResumeEditor = () => {
             <Button onClick={handleSave} className="absolute top-7 right-5 p-2 rounded-lg shadow-xl w-24">
               Save
             </Button>
-            <Button onClick={handleGeneratePDF} className="absolute top-7 right-32 p-2 rounded-lg shadow-xl">
+            <Button
+              onClick={handleGeneratePDF}
+              className="absolute top-7 right-32 p-2 rounded-lg shadow-xl"
+              variant={"destructive"}
+            >
               Download MD
             </Button>
           </div>
@@ -306,7 +310,7 @@ function InputForm({
     <div className="section-outer">
       <h2 className="text-24 font-semibold gradient">Education</h2>
       {resumeData.education.map((edu, index) => (
-        <div key={index} className="border rounded-lg p-4 space-y-4">
+        <div key={index} className="border rounded-lg p-4 space-y-4 section-outer">
           {Object.keys(edu).map((field) => (
             <div key={field} className="flex flex-col gap-1">
               <Label htmlFor={`${field}-${index}`} className="form-label">
@@ -348,18 +352,30 @@ function InputForm({
               <div key={field} className="flex flex-col gap-1">
                 <h4 className="text-18 font-semibold">{field.charAt(0).toUpperCase() + field.slice(1)}</h4>
                 {project[field].map((item, itemIndex) => (
-                  <Input
-                    key={itemIndex}
-                    type="text"
-                    value={item}
-                    onChange={(e) => {
-                      const newArray = [...project[field]];
-                      newArray[itemIndex] = e.target.value;
-                      onUpdateSection("projects", index, field, newArray);
-                    }}
-                    placeholder={`${field} ${itemIndex + 1}`}
-                    className="input-class"
-                  />
+                  <div className="flex space-x-2 justify-between items-center">
+                    <Input
+                      key={itemIndex}
+                      type="text"
+                      value={item}
+                      onChange={(e) => {
+                        const newArray = [...project[field]];
+                        newArray[itemIndex] = e.target.value;
+                        onUpdateSection("projects", index, field, newArray);
+                      }}
+                      placeholder={`${field} ${itemIndex + 1}`}
+                      className="input-class"
+                    />
+                    <Button
+                      onClick={() => {
+                        const newArray = [...project[field]];
+                        newArray.splice(itemIndex, 1);
+                        onUpdateSection("projects", index, field, newArray);
+                      }}
+                      variant={"secondary"}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 ))}
                 <Button
                   onClick={() => {
@@ -393,9 +409,7 @@ function InputForm({
           )}
         </div>
       ))}
-      <Button onClick={() => onAddSection("projects")} >
-        Add Project
-      </Button>
+      <Button onClick={() => onAddSection("projects")}>Add Project</Button>
     </div>
   );
 
@@ -427,18 +441,25 @@ function InputForm({
               <div key={field} className="flex flex-col gap-1">
                 <h4 className="text-18 font-semibold">{field.charAt(0).toUpperCase() + field.slice(1)}</h4>
                 {exp[field].map((item, itemIndex) => (
-                  <Input
-                    key={itemIndex}
-                    type="text"
-                    value={item}
-                    onChange={(e) => {
+                  <div className="flex space-x-2 justify-between items-center">
+                    <Input
+                      key={itemIndex}
+                      type="text"
+                      value={item}
+                      onChange={(e) => {
+                        const newArray = [...exp[field]];
+                        newArray[itemIndex] = e.target.value;
+                        onUpdateSection("experience", index, field, newArray);
+                      }}
+                      placeholder={`${field} ${itemIndex + 1}`}
+                      className="input-class"
+                    />
+                    <Button onClick={() => {
                       const newArray = [...exp[field]];
-                      newArray[itemIndex] = e.target.value;
+                      newArray.splice(itemIndex, 1);
                       onUpdateSection("experience", index, field, newArray);
-                    }}
-                    placeholder={`${field} ${itemIndex + 1}`}
-                    className="input-class"
-                  />
+                    }} variant="secondary">Delete</Button>
+                  </div>
                 ))}
                 <Button
                   onClick={() => {
@@ -472,9 +493,7 @@ function InputForm({
           )}
         </div>
       ))}
-      <Button onClick={() => onAddSection("experience")} >
-        Add Experience
-      </Button>
+      <Button onClick={() => onAddSection("experience")}>Add Experience</Button>
     </div>
   );
 

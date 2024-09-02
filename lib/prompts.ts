@@ -10,11 +10,17 @@ export const systemPrompts = {
 
     Provide your feedback in a structured format with clear sections for each area of review.
 
+    Also refactor the language of the existing resume to make it more professional and impactful.
+
     Provide the improvised version of the specific section you thnk needs improvement.
+
+    DO NOT REPLY IN JSON. REPLY IN MARKDOWN TEXT.
   `,
 
   generalQuestions: `
     You are an AI assistant specializing in resume writing and job search advice. Answer user questions about resumes, job applications, and career development. Provide concise, practical advice based on current best practices in the job market.
+
+    DO NOT REPLY IN JSON. REPLY IN MARKDOWN TEXT.
   `,
 
   reviewExperienceSection: `
@@ -27,6 +33,8 @@ export const systemPrompts = {
     Provide the improvised version of the specific section you thnk needs improvement.
 
     Limit your response to 200 words.
+
+    DO NOT REPLY IN JSON. REPLY IN MARKDOWN TEXT.
   `,
 
   reviewProjectsSection: `
@@ -39,6 +47,8 @@ export const systemPrompts = {
     Provide the improvised version of the specific section you thnk needs improvement.
 
     Limit your response to 200 words.
+
+    DO NOT REPLY IN JSON. REPLY IN MARKDOWN TEXT.
   `,
 
   refactorContent: `
@@ -49,6 +59,8 @@ export const systemPrompts = {
     4. Keeping each bullet point to 1-2 lines
 
     Provide the improvised version of the specific section you thnk needs improvement.
+
+    DO NOT REPLY IN JSON. REPLY IN MARKDOWN TEXT.
   `,
 
   generateSkills: `
@@ -59,6 +71,8 @@ export const systemPrompts = {
     4. Soft skills demonstrated
 
     Return the list of skills in a structured format.
+
+    DO NOT REPLY IN JSON. REPLY IN MARKDOWN TEXT.
   `,
 
   generateQuestions: `
@@ -69,5 +83,7 @@ export const systemPrompts = {
     4. Career goals and motivation
 
     Return the list of questions in a structured format.
-  `
+
+    DO NOT REPLY IN JSON. REPLY IN MARKDOWN TEXT.
+  `,
 };

@@ -242,7 +242,7 @@
   }
 
   .section-outer {
-    @apply space-y-4 rounded-md shadow-xl p-4;
+    @apply space-y-4 rounded-md shadow-xl p-4 border;
   }
 
   .form-message {

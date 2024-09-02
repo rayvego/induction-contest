@@ -130,28 +130,28 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
     }
   };
 
-  const handleRefactorContent = async (content: string, section: keyof ResumeData) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/refactor-content", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
+  // const handleRefactorContent = async (content: string, section: keyof ResumeData) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch("/api/refactor-content", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ content }),
+  //     });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
 
-      const data = await response.json();
-      const refactoredContent = JSON.parse(data.content);
-      dispatch({ type: "UPDATE_SECTION", payload: { section, content: refactoredContent } });
-    } catch (error) {
-      console.error("Error refactoring content:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     const data = await response.json();
+  //     const refactoredContent = JSON.parse(data.content);
+  //     dispatch({ type: "UPDATE_SECTION", payload: { section, content: refactoredContent } });
+  //   } catch (error) {
+  //     console.error("Error refactoring content:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="flex flex-col h-full p-4 space-y-4">
@@ -173,8 +173,8 @@ const AIChatBox: React.FC<AIChatBoxProps> = ({ resumeData, dispatch }) => {
       </div>
 
       <div className="flex-grow overflow-y-scroll space-y-2">
-        <div className="space-y-2 p-2">
-          <div className="overflow-y-auto space-y-2">
+        <div className="space-y-2 p-2 border rounded-xl h-full bg-gray-50">
+          <div className="overflow-y-auto space-y-2 ">
             {messages.map((msg, index) => (
               <div key={index} className={`p-2 rounded ${msg.role === "user" ? "bg-white text-black" : "bg-gray-200"}`}>
                 {msg.role === "user" ? (
