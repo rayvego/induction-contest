@@ -22,7 +22,9 @@ const Nav = ({userId} : {userId: string}) => {
   return (
     <div className="flex items-center space-x-4">
       <div>
-        Made with 🫶🏻 by <span className="gradient">Rayvego</span>
+        <Link href={"https://github.com/rayvego/induction-contest.git"} className="hover:underline">
+          Made with 🫶🏻 by <span className="gradient">Rayvego</span>
+        </Link>
       </div>
       {userId && <Button onClick={logoutHandler}>Logout</Button>}
     </div>
