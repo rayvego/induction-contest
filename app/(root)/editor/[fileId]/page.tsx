@@ -17,7 +17,7 @@ import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 // Sample data for resume editor
 const data = {
   personalInfo: {
-    name: "Rayvego",
+    name: "Example",
     email: "themohit27@gmail.com",
     linkedIn: "https://www.linkedin.com/in/mohit-panchal-18835to5329/",
     github: "https://github.com/rayvego",
